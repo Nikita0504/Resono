@@ -1,0 +1,209 @@
+package com.dev.player
+
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
+import androidx.media3.common.Timeline
+import androidx.media3.exoplayer.ExoPlayer
+import com.dev.domain.model.PlaybackError
+import com.dev.domain.model.PlaybackState
+import com.dev.domain.model.PlayableMedia
+import com.dev.domain.model.PlayerState
+import com.dev.domain.model.RepeatMode
+import com.dev.domain.repository.PlayerRepository
+import com.dev.logger.Logger
+import com.dev.logger.d
+import com.dev.logger.e
+import com.dev.logger.i
+import com.dev.logger.w
+import com.dev.player.mapper.MediaItemMapper
+import com.dev.player.mapper.toDomainRepeatMode
+import com.dev.player.mapper.toMedia3RepeatMode
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.withContext
+
+class PlayerRepositoryImpl(
+    private val player: ExoPlayer ,
+    private val logger: Logger,
+    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
+) : PlayerRepository {
+    private val _playerState = MutableStateFlow(PlayerState())
+    override val playerState: StateFlow<PlayerState> = _playerState.asStateFlow()
+
+    private var currentPlaylist: Map<String, PlayableMedia> = emptyMap()
+
+    private val listener = object : Player.Listener {
+
+        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            updateState()
+        }
+
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            updateState()
+        }
+
+        override fun onIsPlayingChanged(isPlaying: Boolean) {
+            _playerState.update { it.copy(isPlaying = isPlaying) }
+        }
+
+        override fun onPlayerError(error: PlaybackException) {
+            val currentFile = currentMediaFile()
+            logger.e("PlayerRepo", "Playback error for ${currentFile?.mediaFile?.name}", error)
+            _playerState.update {
+                it.copy(playbackError = PlaybackError.fromException(error.errorCode, error.message))
+            }
+        }
+
+        override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+            updateState()
+        }
+
+        override fun onRepeatModeChanged(repeatMode: Int) {
+            _playerState.update { it.copy(repeatMode = repeatMode.toDomainRepeatMode()) }
+        }
+
+        override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+            _playerState.update { it.copy(isShuffleEnabled = shuffleModeEnabled) }
+        }
+    }
+
+    init {
+        player.addListener(listener)
+        logger.i("PlayerRepo", "Player initialized")
+    }
+
+    override suspend fun prepare(files: List<PlayableMedia>, startIndex: Int) {
+        withContext(mainDispatcher) {
+            currentPlaylist = files.associateBy { it.mediaFile.id }
+
+            val mediaItems = files.mapNotNull { playable ->
+                with(MediaItemMapper) {
+                    playable.toMediaItem().also { item ->
+                        if (item == null) {
+                            logger.w("PlayerRepo", "Skipping ${playable.mediaFile.name}: no URI")
+                        }
+                    }
+                }
+            }
+
+            if (mediaItems.isEmpty()) {
+                logger.e("PlayerRepo", "No playable items in playlist", IllegalStateException("No playable items"))
+                return@withContext
+            }
+
+            player.setMediaItems(mediaItems, startIndex, C.TIME_UNSET)
+            player.prepare()
+            updateState()
+            logger.i("PlayerRepo", "Prepared ${mediaItems.size} items, starting at $startIndex")
+        }
+    }
+
+    override suspend fun play() {
+        withContext(mainDispatcher) {
+            player.play()
+            logger.d("PlayerRepo", "Play called")
+        }
+    }
+
+    override suspend fun pause() {
+        withContext(mainDispatcher) {
+            player.pause()
+            logger.d("PlayerRepo", "Pause called")
+        }
+    }
+
+    override suspend fun seekTo(positionMs: Long) {
+        withContext(mainDispatcher) {
+            player.seekTo(positionMs)
+            logger.d("PlayerRepo", "Seek to $positionMs ms")
+        }
+    }
+
+    override suspend fun seekToDefaultPosition(index: Int) {
+        withContext(mainDispatcher) {
+            player.seekToDefaultPosition(index)
+            logger.d("PlayerRepo", "Seek to default position $index")
+        }
+    }
+
+    override suspend fun setRepeatMode(mode: RepeatMode) {
+        withContext(mainDispatcher) {
+            player.repeatMode = mode.toMedia3RepeatMode()
+            logger.d("PlayerRepo", "Set repeat mode: $mode")
+        }
+    }
+
+    override suspend fun setShuffleEnabled(enabled: Boolean) {
+        withContext(mainDispatcher) {
+            player.shuffleModeEnabled = enabled
+            logger.d("PlayerRepo", "Set shuffle enabled: $enabled")
+        }
+    }
+
+    override suspend fun skipToNext() {
+        withContext(mainDispatcher) {
+            if (player.hasNextMediaItem()) {
+                player.seekToNextMediaItem()
+                logger.d("PlayerRepo", "Skipped to next")
+            }
+        }
+    }
+
+    override suspend fun skipToPrevious() {
+        withContext(mainDispatcher) {
+            if (player.hasPreviousMediaItem()) {
+                player.seekToPreviousMediaItem()
+                logger.d("PlayerRepo", "Skipped to previous")
+            }
+        }
+    }
+
+    override suspend fun clear() {
+        withContext(mainDispatcher) {
+            player.clearMediaItems()
+            currentPlaylist = emptyMap()
+            _playerState.value = PlayerState()
+            logger.d("PlayerRepo", "Player cleared")
+        }
+    }
+
+    private fun currentMediaFile(): PlayableMedia? =
+        player.currentMediaItem?.mediaId?.let { currentPlaylist[it] }
+
+    private fun updateState() {
+        val currentFile = currentMediaFile()
+        val playlist = (0 until player.mediaItemCount)
+            .mapNotNull { i -> player.getMediaItemAt(i).mediaId.let { currentPlaylist[it] } }
+
+        _playerState.update { state ->
+            state.copy(
+                currentItem = currentFile,
+                playlist = playlist,
+                currentIndex = player.currentMediaItemIndex,
+                positionMs = player.currentPosition,
+                durationMs = player.duration.takeIf { it != C.TIME_UNSET } ?: 0L,
+                playbackState = player.playbackState.toPlayerPlaybackState(),
+            )
+        }
+    }
+
+    private fun Int.toPlayerPlaybackState(): PlaybackState = when (this) {
+        Player.STATE_IDLE -> PlaybackState.IDLE
+        Player.STATE_BUFFERING -> PlaybackState.BUFFERING
+        Player.STATE_READY -> PlaybackState.READY
+        Player.STATE_ENDED -> PlaybackState.ENDED
+        else -> PlaybackState.IDLE
+    }
+
+    fun release() {
+        player.removeListener(listener)
+        player.release()
+        logger.i("PlayerRepo", "Player released")
+    }
+}
