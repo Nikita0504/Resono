@@ -17,5 +17,5 @@ interface MediaRepository {
 
     suspend fun getAudioFileById(id: String): MediaFile.Audio?
 
-    fun searchMedia(query: String): Flow<List<MediaFile>>
+    suspend fun searchMedia(query: String): Flow<List<MediaFile>>
 }

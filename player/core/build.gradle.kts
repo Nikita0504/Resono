@@ -8,8 +8,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":domain"))
-    implementation(project(":core:logger"))
+    implementation(projects.domain)
+    implementation(projects.core.logger)
 
     implementation(libs.bundles.media3.player)
     implementation(libs.media3.datasource.okhttp)

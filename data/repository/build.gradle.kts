@@ -8,10 +8,10 @@ android {
 }
 
 dependencies {
-    implementation(project(":domain"))
-    implementation(project(":data:database"))
-    implementation(project(":data:network"))
-    implementation(project(":core:logger"))
+    implementation(projects.domain)
+    implementation(projects.data.database)
+    implementation(projects.data.network)
+    implementation(projects.core.logger)
 
     implementation(libs.koin.android)
 }

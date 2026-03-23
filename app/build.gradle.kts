@@ -10,10 +10,10 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:navigation"))
-    implementation(project(":feature:player:player"))
-    implementation(project(":feature:player:album-list"))
-    implementation(project(":feature:player:track-list"))
-    implementation(project(":feature:gallery:media-library"))
+    implementation(projects.core.navigation)
+    implementation(projects.feature.player.player)
+    implementation(projects.feature.player.albumList)
+    implementation(projects.feature.player.trackList)
+    implementation(projects.feature.gallery.mediaLibrary)
     implementation(libs.androidx.lifecycle.runtime.ktx)
 }

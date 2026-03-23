@@ -6,7 +6,3 @@ plugins {
 android {
     namespace = "com.dev.navigation"
 }
-
-dependencies {
-    implementation(libs.kotlinx.serialization.json)
-}
