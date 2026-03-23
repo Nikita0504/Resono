@@ -18,14 +18,20 @@ sealed interface MediaSource {
 interface BaseMediaData {
     val id: String
     val name: String
-    val durationMs: Long
     val mimeType: String
+    val sizeBytes: Long
+    val durationMs: Long
+    val dateAddedEpochSeconds: Long?
+    val dateModifiedEpochSeconds: Long?
+    val relativePath: String?
 }
 
 data class LocalMediaData(
     val localUri: String,
-    val fileSize: Long,
-    val dateAdded: Long,
+    val fileSizeBytes: Long,
+    val dateAddedEpochSeconds: Long?,
+    val dateModifiedEpochSeconds: Long?,
+    val relativePath: String?,
 )
 
 data class RemoteMediaData(

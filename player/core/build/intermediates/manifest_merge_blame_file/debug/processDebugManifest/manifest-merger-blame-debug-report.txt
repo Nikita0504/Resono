@@ -1,0 +1,26 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.dev.player" >
+4
+5    <uses-sdk android:minSdkVersion="26" />
+5-->INJECTED
+5-->INJECTED
+6
+7    <application>
+7-->/run/media/nikita/SP PC60/projects/kotlin/app/Resono/player/core/src/main/AndroidManifest.xml:4:5-12:19
+8        <service
+8-->/run/media/nikita/SP PC60/projects/kotlin/app/Resono/player/core/src/main/AndroidManifest.xml:5:9-11:19
+9            android:name="com.dev.player.service.MusicPlayerService"
+9-->/run/media/nikita/SP PC60/projects/kotlin/app/Resono/player/core/src/main/AndroidManifest.xml:6:13-69
+10            android:exported="true" >
+10-->/run/media/nikita/SP PC60/projects/kotlin/app/Resono/player/core/src/main/AndroidManifest.xml:7:13-36
+11            <intent-filter>
+11-->/run/media/nikita/SP PC60/projects/kotlin/app/Resono/player/core/src/main/AndroidManifest.xml:8:13-10:29
+12                <action android:name="androidx.media3.session.MediaSessionService" />
+12-->/run/media/nikita/SP PC60/projects/kotlin/app/Resono/player/core/src/main/AndroidManifest.xml:9:17-86
+12-->/run/media/nikita/SP PC60/projects/kotlin/app/Resono/player/core/src/main/AndroidManifest.xml:9:25-83
+13            </intent-filter>
+14        </service>
+15    </application>
+16
+17</manifest>

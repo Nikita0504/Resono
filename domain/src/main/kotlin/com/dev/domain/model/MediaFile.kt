@@ -24,33 +24,49 @@ sealed interface MediaFile : BaseMediaData {
     data class Audio(
         override val id: String,
         override val name: String,
-        override val durationMs: Long,
         override val mimeType: String,
+        override val sizeBytes: Long,
+        override val durationMs: Long,
+        override val dateAddedEpochSeconds: Long? = null,
+        override val dateModifiedEpochSeconds: Long? = null,
+        override val relativePath: String? = null,
         override val source: MediaSource,
         val artist: String,
         val album: String,
         val albumArtUri: String?,
         val trackNumber: Int? = null,
+        val year: Int? = null,
+        val title: String? = null,
     ) : MediaFile
 
     data class Video(
         override val id: String,
         override val name: String,
-        override val durationMs: Long,
         override val mimeType: String,
+        override val sizeBytes: Long,
+        override val durationMs: Long,
+        override val dateAddedEpochSeconds: Long? = null,
+        override val dateModifiedEpochSeconds: Long? = null,
+        override val relativePath: String? = null,
         override val source: MediaSource,
         val width: Int,
         val height: Int,
         val thumbnailUri: String?,
+        val title: String? = null,
     ) : MediaFile
 
     data class Photo(
         override val id: String,
         override val name: String,
-        override val durationMs: Long = 0L,
         override val mimeType: String,
+        override val sizeBytes: Long,
+        override val durationMs: Long = 0L,
+        override val dateAddedEpochSeconds: Long? = null,
+        override val dateModifiedEpochSeconds: Long? = null,
+        override val relativePath: String? = null,
         override val source: MediaSource,
         val width: Int,
         val height: Int,
+        val title: String? = null,
     ) : MediaFile
 }

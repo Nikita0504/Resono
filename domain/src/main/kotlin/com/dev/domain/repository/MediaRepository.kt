@@ -2,6 +2,7 @@ package com.dev.domain.repository
 
 import com.dev.domain.model.MediaFile
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 interface MediaRepository {
 
@@ -11,11 +12,11 @@ interface MediaRepository {
 
     fun getPhotos(): Flow<List<MediaFile.Photo>>
 
-    fun getAllMedia(): Flow<List<MediaFile>>
-
     suspend fun scanLocalMedia()
+
+    fun getAllMedia(): Flow<List<MediaFile>> = flowOf(emptyList())
 
     suspend fun getAudioFileById(id: String): MediaFile.Audio?
 
-    suspend fun searchMedia(query: String): Flow<List<MediaFile>>
+    fun searchMedia(query: String): Flow<List<MediaFile>> = flowOf(emptyList())
 }

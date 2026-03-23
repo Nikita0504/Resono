@@ -1,0 +1,8 @@
+com.dev.player.core-pngs-0 /run/media/nikita/SP PC60/projects/kotlin/app/Resono/player/core/build/generated/res/pngs/debug
+com.dev.player.core-updated_navigation_xml-1 /run/media/nikita/SP PC60/projects/kotlin/app/Resono/player/core/build/generated/updated_navigation_xml/debug
+com.dev.player.core-mergeDebugResources-2 /run/media/nikita/SP PC60/projects/kotlin/app/Resono/player/core/build/intermediates/incremental/debug/mergeDebugResources/merged.dir
+com.dev.player.core-mergeDebugResources-3 /run/media/nikita/SP PC60/projects/kotlin/app/Resono/player/core/build/intermediates/incremental/debug/mergeDebugResources/stripped.dir
+com.dev.player.core-debug-4 /run/media/nikita/SP PC60/projects/kotlin/app/Resono/player/core/build/intermediates/merged_res/debug/mergeDebugResources
+com.dev.player.core-debug-5 /run/media/nikita/SP PC60/projects/kotlin/app/Resono/player/core/build/intermediates/packaged_res/debug/packageDebugResources
+com.dev.player.core-debug-6 /run/media/nikita/SP PC60/projects/kotlin/app/Resono/player/core/src/debug/res
+com.dev.player.core-main-7 /run/media/nikita/SP PC60/projects/kotlin/app/Resono/player/core/src/main/res

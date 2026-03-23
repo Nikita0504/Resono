@@ -9,6 +9,7 @@ android {
 
 dependencies {
     implementation(projects.domain)
+    implementation(projects.data.local)
     implementation(projects.data.database)
     implementation(projects.data.network)
     implementation(projects.core.logger)

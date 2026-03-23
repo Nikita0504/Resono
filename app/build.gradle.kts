@@ -10,7 +10,11 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.logger)
     implementation(projects.core.navigation)
+    implementation(projects.data.local)
+    implementation(projects.data.repository)
+    implementation(projects.player.core)
     implementation(projects.feature.player.player)
     implementation(projects.feature.player.albumList)
     implementation(projects.feature.player.trackList)

@@ -6,3 +6,7 @@ plugins {
 android {
     namespace = "com.dev.tracklist"
 }
+
+dependencies {
+    implementation(projects.domain)
+}

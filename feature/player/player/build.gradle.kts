@@ -4,5 +4,5 @@ plugins {
 }
 
 android {
-    namespace = "com.dev.player"
+    namespace = "com.dev.feature.player"
 }

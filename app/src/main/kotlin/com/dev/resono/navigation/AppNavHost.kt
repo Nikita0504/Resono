@@ -7,6 +7,7 @@ import com.dev.albumlist.albumListNavGraph
 import com.dev.medialibrary.mediaLibraryNavGraph
 import com.dev.player.PlayerGraph
 import com.dev.player.playerNavGraph
+import com.dev.tracklist.TrackListGraph
 import com.dev.tracklist.trackListNavGraph
 
 @Composable
@@ -15,7 +16,7 @@ fun AppNavHost() {
 
     NavHost(
         navController = navController,
-        startDestination = PlayerGraph,
+        startDestination = TrackListGraph,
     ) {
         playerNavGraph()
         albumListNavGraph()
