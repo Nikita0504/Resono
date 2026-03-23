@@ -3,6 +3,7 @@ package com.dev.player.mapper
 import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import com.dev.domain.model.MediaSource
 import com.dev.domain.model.PlayableMedia
 
 object MediaItemMapper {
@@ -18,9 +19,9 @@ object MediaItemMapper {
     }
 
     private fun PlayableMedia.resolveUri(): String? = when (val s = mediaFile.source) {
-        is com.dev.domain.model.MediaSource.LocalOnly -> s.local.localUri
-        is com.dev.domain.model.MediaSource.Synced -> s.local.localUri
-        is com.dev.domain.model.MediaSource.RemoteOnly -> s.remote.remoteUrl
+        is MediaSource.LocalOnly -> s.local.localUri
+        is MediaSource.Synced -> s.local.localUri
+        is MediaSource.RemoteOnly -> s.remote.remoteUrl
     }
 
     private fun PlayableMedia.buildMetadata(): MediaMetadata {

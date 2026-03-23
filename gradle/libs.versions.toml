@@ -208,6 +208,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 
 # Compose Core (UI + Lifecycle + Navigation)
 compose-core = [
+    "navigation-compose",
     "androidx-compose-ui",
     "androidx-compose-ui-graphics",
     "androidx-compose-ui-tooling-preview",
@@ -217,6 +218,7 @@ compose-core = [
     "androidx-lifecycle-runtime-compose",
     "androidx-lifecycle-viewmodel-compose",
 ]
+
 
 # Koin DI
 koin-android-full = [

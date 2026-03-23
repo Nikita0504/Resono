@@ -2,12 +2,15 @@
 
 package android.dev
 
+import com.android.build.api.dsl.LibraryExtension
+import helpers.configureKotlinAndroid
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.kotlin.dsl.getByType
 
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 val libs = extensions
@@ -26,10 +29,11 @@ android {
     }
 }
 
+configureKotlinAndroid(extensions.getByType<LibraryExtension>())
+
 dependencies {
-    "implementation"(libs.findLibrary("navigation-compose").get())
-    "implementation"(libs.findLibrary("androidx-lifecycle-viewmodel-compose").get())
-    "implementation"(libs.findLibrary("androidx-lifecycle-runtime-compose").get())
-    "implementation"(libs.findLibrary("androidx-compose-icons-extended").get())
+    "implementation"(platform(libs.findLibrary("androidx-compose-bom").get()))
+    //"implementation"(libs.findLibrary("androidx-compose-icons-extended").get())
     "implementation"(libs.findBundle("koin-android-full").get())
+    "implementation"(libs.findBundle("compose-core").get())
 }

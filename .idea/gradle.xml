@@ -24,12 +24,20 @@
             <option value="$PROJECT_DIR$/build-logic" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/core/logger" />
+            <option value="$PROJECT_DIR$/core/navigation" />
+            <option value="$PROJECT_DIR$/core/ui" />
             <option value="$PROJECT_DIR$/data" />
             <option value="$PROJECT_DIR$/data/database" />
             <option value="$PROJECT_DIR$/data/network" />
             <option value="$PROJECT_DIR$/data/repository" />
             <option value="$PROJECT_DIR$/domain" />
             <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/gallery" />
+            <option value="$PROJECT_DIR$/feature/gallery/media-library" />
+            <option value="$PROJECT_DIR$/feature/player" />
+            <option value="$PROJECT_DIR$/feature/player/album-list" />
+            <option value="$PROJECT_DIR$/feature/player/player" />
+            <option value="$PROJECT_DIR$/feature/player/track-list" />
             <option value="$PROJECT_DIR$/player" />
             <option value="$PROJECT_DIR$/player/core" />
           </set>

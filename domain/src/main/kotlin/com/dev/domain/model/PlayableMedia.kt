@@ -1,12 +1,4 @@
 package com.dev.domain.model
-
-/**
- * Воспроизводимые медиа-файлы.
- * 
- * Используется в PlayerRepository для разделения логики:
- * - Audio и Video воспроизводятся через ExoPlayer (Media3)
- * - Photo не воспроизводятся, а отображаются через Coil/Glide
- */
 sealed interface PlayableMedia {
     val mediaFile: MediaFile
     
