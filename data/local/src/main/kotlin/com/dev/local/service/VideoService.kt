@@ -1,10 +1,10 @@
-package com.dev.local.repository
+package com.dev.local.service
 
 import com.dev.domain.model.MediaFile
 import com.dev.local.datasource.VideoMediaStoreDataSource
 import com.dev.local.mapper.VideoMediaMapper
 
-class VideoRepositoryImpl(
+class VideoService(
     private val dataSource: VideoMediaStoreDataSource,
     private val mapper: VideoMediaMapper,
 ) {

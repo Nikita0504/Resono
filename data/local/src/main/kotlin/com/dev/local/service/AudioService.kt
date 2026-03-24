@@ -1,10 +1,10 @@
-package com.dev.local.repository
+package com.dev.local.service
 
 import com.dev.domain.model.MediaFile
 import com.dev.local.datasource.AudioMediaStoreDataSource
 import com.dev.local.mapper.AudioMediaMapper
 
-class AudioRepositoryImpl(
+class AudioService(
     private val dataSource: AudioMediaStoreDataSource,
     private val mapper: AudioMediaMapper,
 ) {

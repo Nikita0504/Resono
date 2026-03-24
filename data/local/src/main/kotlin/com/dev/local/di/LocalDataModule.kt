@@ -8,25 +8,26 @@ import com.dev.local.datasource.VideoMediaStoreDataSource
 import com.dev.local.mapper.AudioMediaMapper
 import com.dev.local.mapper.PhotoMediaMapper
 import com.dev.local.mapper.VideoMediaMapper
-import com.dev.local.repository.AudioRepositoryImpl
-import com.dev.local.repository.PhotoRepositoryImpl
-import com.dev.local.repository.VideoRepositoryImpl
+import com.dev.local.service.AudioService
+import com.dev.local.service.PhotoService
+import com.dev.local.service.VideoService
 import com.dev.local.scanner.MediaStoreScanner
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 val localDataModule = module {
     single<ContentResolver> { get<Context>().contentResolver }
-    single { MediaStoreScanner(get()) }
+    singleOf(::MediaStoreScanner)
 
-    single { AudioMediaStoreDataSource(get()) }
-    single { VideoMediaStoreDataSource(get()) }
-    single { PhotoMediaStoreDataSource(get()) }
+    singleOf(::AudioMediaStoreDataSource)
+    singleOf(::VideoMediaStoreDataSource)
+    singleOf(::PhotoMediaStoreDataSource)
 
-    single { AudioMediaMapper() }
-    single { VideoMediaMapper() }
-    single { PhotoMediaMapper() }
+    singleOf(::AudioMediaMapper)
+    singleOf(::VideoMediaMapper)
+    singleOf(::PhotoMediaMapper)
 
-    single { AudioRepositoryImpl(get(), get()) }
-    single { VideoRepositoryImpl(get(), get()) }
-    single { PhotoRepositoryImpl(get(), get()) }
+    singleOf(::AudioService)
+    singleOf(::VideoService)
+    singleOf(::PhotoService)
 }

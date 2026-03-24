@@ -2,9 +2,9 @@ package com.dev.data.repository
 
 import com.dev.domain.model.MediaFile
 import com.dev.domain.repository.MediaRepository
-import com.dev.local.repository.AudioRepositoryImpl
-import com.dev.local.repository.PhotoRepositoryImpl
-import com.dev.local.repository.VideoRepositoryImpl
+import com.dev.local.service.AudioService
+import com.dev.local.service.PhotoService
+import com.dev.local.service.VideoService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -13,9 +13,9 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.update
 
 class MediaRepositoryImpl(
-    private val audioRepository: AudioRepositoryImpl,
-    private val videoRepository: VideoRepositoryImpl,
-    private val photoRepository: PhotoRepositoryImpl,
+    private val audioRepository: AudioService,
+    private val videoRepository: VideoService,
+    private val photoRepository: PhotoService,
 ) : MediaRepository {
 
     private val refreshState = MutableStateFlow(0L)

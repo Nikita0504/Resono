@@ -1,10 +1,10 @@
-package com.dev.local.repository
+package com.dev.local.service
 
 import com.dev.domain.model.MediaFile
 import com.dev.local.datasource.PhotoMediaStoreDataSource
 import com.dev.local.mapper.PhotoMediaMapper
 
-class PhotoRepositoryImpl(
+class PhotoService(
     private val dataSource: PhotoMediaStoreDataSource,
     private val mapper: PhotoMediaMapper,
 ) {
