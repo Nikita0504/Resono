@@ -4,9 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.dev.domain.repository.PlaybackVisualizerRepository
+import com.dev.domain.repository.PlayerRepository
 import com.dev.domain.usecase.player.ObserveCurrentWaveformUseCase
 import com.dev.player.PlayerRepositoryImpl
 import com.dev.player.visualizer.Media3PlaybackVisualizerTap
@@ -15,6 +17,7 @@ import com.dev.player.visualizer.VisualizerRenderersFactory
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -39,11 +42,10 @@ private fun provideExoPlayer(
 @SuppressLint("UnsafeOptInUsageError")
 val playerModule = module {
     singleOf(::Media3PlaybackVisualizerTap)
-    single { provideExoPlayer(get(), get()) }
+    single { provideExoPlayer(get(), get()) } bind Player::class
 
-    singleOf(::PlayerRepositoryImpl) { bind<com.dev.domain.repository.PlayerRepository>() }
+    single<PlayerRepository> { PlayerRepositoryImpl(player = get(), logger = get()) }
     singleOf(::PlaybackVisualizerRepositoryImpl) { bind<PlaybackVisualizerRepository>() }
 
     factoryOf(::ObserveCurrentWaveformUseCase)
 }
-

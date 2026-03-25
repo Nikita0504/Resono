@@ -5,6 +5,7 @@ import com.dev.data.di.repositoryModule
 import com.dev.logger.loggerModule
 import com.dev.local.di.localDataModule
 import com.dev.player.di.playerModule
+import com.dev.resono.di.appModule
 import com.dev.tracklist.trackListModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -23,6 +24,7 @@ class MainApplication : Application() {
                 localDataModule,
                 repositoryModule,
                 trackListModule,
+                appModule,
             ))
         }
     }

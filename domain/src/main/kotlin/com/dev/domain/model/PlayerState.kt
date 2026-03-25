@@ -54,5 +54,8 @@ data class PlayerState(
         get() = playbackState == PlaybackState.READY
 
     val hasNext: Boolean
-        get() = currentIndex < playlist.size - 1
+        get() = currentIndex >= 0 && currentIndex < playlist.size - 1
+
+    val hasPrevious: Boolean
+        get() = currentIndex > 0 && playlist.isNotEmpty()
 }

@@ -21,26 +21,46 @@ import com.dev.player.mapper.MediaItemMapper
 import com.dev.player.mapper.toDomainRepeatMode
 import com.dev.player.mapper.toMedia3RepeatMode
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class PlayerRepositoryImpl(
-    private val player: ExoPlayer ,
+    private val player: ExoPlayer,
     private val logger: Logger,
     private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
 ) : PlayerRepository {
+    private companion object {
+        const val PROGRESS_TICK_MS = 300L
+    }
+
     private val _playerState = MutableStateFlow(PlayerState())
     override val playerState: StateFlow<PlayerState> = _playerState.asStateFlow()
+    private val scope = CoroutineScope(SupervisorJob() + mainDispatcher)
 
     private var currentPlaylist: Map<String, PlayableMedia> = emptyMap()
+    private var progressTickerJob: Job? = null
 
     private val listener = object : Player.Listener {
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            updateState()
+        }
+
+        override fun onPositionDiscontinuity(
+            oldPosition: Player.PositionInfo,
+            newPosition: Player.PositionInfo,
+            reason: Int,
+        ) {
             updateState()
         }
 
@@ -49,7 +69,13 @@ class PlayerRepositoryImpl(
         }
 
         override fun onIsPlayingChanged(isPlaying: Boolean) {
+            if (isPlaying) {
+                startProgressTicker()
+            } else {
+                stopProgressTicker()
+            }
             _playerState.update { it.copy(isPlaying = isPlaying) }
+            updateState()
         }
 
         override fun onPlayerError(error: PlaybackException) {
@@ -75,6 +101,7 @@ class PlayerRepositoryImpl(
 
     init {
         player.addListener(listener)
+        updateState()
         logger.i("PlayerRepo", "Player initialized")
     }
 
@@ -107,6 +134,8 @@ class PlayerRepositoryImpl(
     override suspend fun play() {
         withContext(mainDispatcher) {
             player.play()
+            startProgressTicker()
+            updateState()
             logger.d("PlayerRepo", "Play called")
         }
     }
@@ -114,6 +143,8 @@ class PlayerRepositoryImpl(
     override suspend fun pause() {
         withContext(mainDispatcher) {
             player.pause()
+            stopProgressTicker()
+            updateState()
             logger.d("PlayerRepo", "Pause called")
         }
     }
@@ -121,6 +152,7 @@ class PlayerRepositoryImpl(
     override suspend fun seekTo(positionMs: Long) {
         withContext(mainDispatcher) {
             player.seekTo(positionMs)
+            updateState()
             logger.d("PlayerRepo", "Seek to $positionMs ms")
         }
     }
@@ -128,6 +160,7 @@ class PlayerRepositoryImpl(
     override suspend fun seekToDefaultPosition(index: Int) {
         withContext(mainDispatcher) {
             player.seekToDefaultPosition(index)
+            updateState()
             logger.d("PlayerRepo", "Seek to default position $index")
         }
     }
@@ -135,6 +168,7 @@ class PlayerRepositoryImpl(
     override suspend fun setRepeatMode(mode: RepeatMode) {
         withContext(mainDispatcher) {
             player.repeatMode = mode.toMedia3RepeatMode()
+            updateState()
             logger.d("PlayerRepo", "Set repeat mode: $mode")
         }
     }
@@ -142,6 +176,7 @@ class PlayerRepositoryImpl(
     override suspend fun setShuffleEnabled(enabled: Boolean) {
         withContext(mainDispatcher) {
             player.shuffleModeEnabled = enabled
+            updateState()
             logger.d("PlayerRepo", "Set shuffle enabled: $enabled")
         }
     }
@@ -152,6 +187,7 @@ class PlayerRepositoryImpl(
                 player.seekToNextMediaItem()
                 logger.d("PlayerRepo", "Skipped to next")
             }
+            updateState()
         }
     }
 
@@ -161,11 +197,13 @@ class PlayerRepositoryImpl(
                 player.seekToPreviousMediaItem()
                 logger.d("PlayerRepo", "Skipped to previous")
             }
+            updateState()
         }
     }
 
     override suspend fun clear() {
         withContext(mainDispatcher) {
+            stopProgressTicker()
             player.clearMediaItems()
             currentPlaylist = emptyMap()
             _playerState.value = PlayerState()
@@ -185,12 +223,35 @@ class PlayerRepositoryImpl(
             state.copy(
                 currentItem = currentFile,
                 playlist = playlist,
-                currentIndex = player.currentMediaItemIndex,
-                positionMs = player.currentPosition,
+                currentIndex = player.currentMediaItemIndex.coerceAtLeast(0),
+                isPlaying = player.isPlaying,
+                positionMs = player.currentPosition.coerceAtLeast(0L),
                 durationMs = player.duration.takeIf { it != C.TIME_UNSET } ?: 0L,
                 playbackState = player.playbackState.toPlayerPlaybackState(),
+                repeatMode = player.repeatMode.toDomainRepeatMode(),
+                isShuffleEnabled = player.shuffleModeEnabled,
             )
         }
+    }
+
+    private fun startProgressTicker() {
+        if (progressTickerJob?.isActive == true) return
+        progressTickerJob = scope.launch {
+            while (isActive && player.isPlaying) {
+                _playerState.update { state ->
+                    state.copy(
+                        positionMs = player.currentPosition.coerceAtLeast(0L),
+                        durationMs = player.duration.takeIf { it != C.TIME_UNSET } ?: 0L,
+                    )
+                }
+                delay(PROGRESS_TICK_MS)
+            }
+        }
+    }
+
+    private fun stopProgressTicker() {
+        progressTickerJob?.cancel()
+        progressTickerJob = null
     }
 
     private fun Int.toPlayerPlaybackState(): PlaybackState = when (this) {
@@ -202,6 +263,7 @@ class PlayerRepositoryImpl(
     }
 
     fun release() {
+        stopProgressTicker()
         player.removeListener(listener)
         player.release()
         logger.i("PlayerRepo", "Player released")

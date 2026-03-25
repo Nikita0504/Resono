@@ -1,8 +1,0 @@
-com.dev.data.repository-pngs-0 /run/media/nikita/SP PC60/projects/kotlin/app/Resono/data/repository/build/generated/res/pngs/debug
-com.dev.data.repository-updated_navigation_xml-1 /run/media/nikita/SP PC60/projects/kotlin/app/Resono/data/repository/build/generated/updated_navigation_xml/debug
-com.dev.data.repository-mergeDebugResources-2 /run/media/nikita/SP PC60/projects/kotlin/app/Resono/data/repository/build/intermediates/incremental/debug/mergeDebugResources/merged.dir
-com.dev.data.repository-mergeDebugResources-3 /run/media/nikita/SP PC60/projects/kotlin/app/Resono/data/repository/build/intermediates/incremental/debug/mergeDebugResources/stripped.dir
-com.dev.data.repository-debug-4 /run/media/nikita/SP PC60/projects/kotlin/app/Resono/data/repository/build/intermediates/merged_res/debug/mergeDebugResources
-com.dev.data.repository-debug-5 /run/media/nikita/SP PC60/projects/kotlin/app/Resono/data/repository/build/intermediates/packaged_res/debug/packageDebugResources
-com.dev.data.repository-debug-6 /run/media/nikita/SP PC60/projects/kotlin/app/Resono/data/repository/src/debug/res
-com.dev.data.repository-main-7 /run/media/nikita/SP PC60/projects/kotlin/app/Resono/data/repository/src/main/res
