@@ -1,6 +1,7 @@
 package com.dev.resono
 
 import android.app.Application
+import com.dev.albumlist.albumListModule
 import com.dev.data.di.repositoryModule
 import com.dev.logger.loggerModule
 import com.dev.local.di.localDataModule
@@ -24,6 +25,7 @@ class MainApplication : Application() {
                 localDataModule,
                 repositoryModule,
                 trackListModule,
+                albumListModule,
                 appModule,
             ))
         }

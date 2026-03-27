@@ -8,6 +8,8 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.ui.component)
+    implementation(projects.core.ui.theme)
     implementation(projects.domain)
     implementation(libs.androidx.compose.icons.extended)
     implementation(libs.coil.compose)

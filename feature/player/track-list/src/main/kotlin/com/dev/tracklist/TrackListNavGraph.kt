@@ -18,10 +18,14 @@ internal object TrackListHomeRoute
 
 fun NavGraphBuilder.trackListNavGraph(
     onTrackSelected: (tracks: List<MediaFile.Audio>, startIndex: Int) -> Unit,
+    onOpenAlbums: () -> Unit,
 ) {
     navigation<TrackListGraph>(startDestination = TrackListHomeRoute) {
         composable<TrackListHomeRoute> {
-            TrackListRoute(onTrackSelected = onTrackSelected)
+            TrackListRoute(
+                onTrackSelected = onTrackSelected,
+                onOpenAlbums = onOpenAlbums,
+            )
         }
     }
 }
@@ -29,6 +33,7 @@ fun NavGraphBuilder.trackListNavGraph(
 @Composable
 private fun TrackListRoute(
     onTrackSelected: (tracks: List<MediaFile.Audio>, startIndex: Int) -> Unit,
+    onOpenAlbums: () -> Unit,
 ) {
     val viewModel = koinViewModel<AudioListViewModel>()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
@@ -43,8 +48,26 @@ private fun TrackListRoute(
 
     TrackListScreen(
         tracks = uiState.value.tracks,
+        hiddenTracks = uiState.value.hiddenTracks,
+        showHiddenTracks = uiState.value.showHiddenTracks,
+        onOpenAlbums = onOpenAlbums,
         onTrackClick = { index ->
             viewModel.onIntent(TrackListIntent.TrackClicked(index))
+        },
+        onShowHiddenChanged = { showHidden ->
+            viewModel.onIntent(TrackListIntent.ToggleShowHidden(showHidden))
+        },
+        onToggleFavorite = { trackId, favorite ->
+            viewModel.onIntent(TrackListIntent.ToggleFavorite(trackId, favorite))
+        },
+        onHideTrack = { trackId ->
+            viewModel.onIntent(TrackListIntent.HideTrack(trackId))
+        },
+        onRestoreTrack = { trackId ->
+            viewModel.onIntent(TrackListIntent.RestoreTrack(trackId))
+        },
+        onEditMetadata = { trackId, metadata ->
+            viewModel.onIntent(TrackListIntent.EditMetadata(trackId, metadata))
         },
     )
 }

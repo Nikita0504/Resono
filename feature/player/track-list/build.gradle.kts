@@ -8,5 +8,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.ui.component)
+    implementation(projects.core.ui.theme)
     implementation(projects.domain)
 }

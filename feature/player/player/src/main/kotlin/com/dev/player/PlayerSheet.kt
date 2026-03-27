@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
+import com.dev.domain.model.AudioMetadataPatch
 import com.dev.domain.model.PlayerState
 import com.dev.player.content.PlayerSurfaceHost
 import kotlin.math.roundToInt
@@ -55,6 +56,17 @@ fun PlayerSheetRoute(
     onNext: () -> Unit,
     onPrevious: () -> Unit,
     onSeekTo: (Long) -> Unit,
+    waveformSamples: List<Float>,
+    displayTitle: String,
+    displayArtist: String,
+    displayAlbum: String,
+    displayArtworkUri: String?,
+    displayTrackNumber: Int?,
+    displayYear: Int?,
+    isFavorite: Boolean,
+    onToggleFavorite: (Boolean) -> Unit,
+    onEditMetadata: (AudioMetadataPatch) -> Unit,
+    onHide: () -> Unit,
 ) {
     PlayerSheetHost(
         modifier = modifier,
@@ -68,6 +80,17 @@ fun PlayerSheetRoute(
         onNext = onNext,
         onPrevious = onPrevious,
         onSeekTo = onSeekTo,
+        waveformSamples = waveformSamples,
+        displayTitle = displayTitle,
+        displayArtist = displayArtist,
+        displayAlbum = displayAlbum,
+        displayArtworkUri = displayArtworkUri,
+        displayTrackNumber = displayTrackNumber,
+        displayYear = displayYear,
+        isFavorite = isFavorite,
+        onToggleFavorite = onToggleFavorite,
+        onEditMetadata = onEditMetadata,
+        onHide = onHide,
     )
 }
 
@@ -85,6 +108,17 @@ private fun PlayerSheetHost(
     onNext: () -> Unit,
     onPrevious: () -> Unit,
     onSeekTo: (Long) -> Unit,
+    waveformSamples: List<Float>,
+    displayTitle: String,
+    displayArtist: String,
+    displayAlbum: String,
+    displayArtworkUri: String?,
+    displayTrackNumber: Int?,
+    displayYear: Int?,
+    isFavorite: Boolean,
+    onToggleFavorite: (Boolean) -> Unit,
+    onEditMetadata: (AudioMetadataPatch) -> Unit,
+    onHide: () -> Unit,
 ) {
     if (!isVisible || playerState.currentItem == null) {
         LaunchedEffect(Unit) { onProgressChange(0f) }
@@ -187,6 +221,17 @@ private fun PlayerSheetHost(
                 onNext = onNext,
                 onPrevious = onPrevious,
                 onSeekTo = onSeekTo,
+                waveformSamples = waveformSamples,
+                displayTitle = displayTitle,
+                displayArtist = displayArtist,
+                displayAlbum = displayAlbum,
+                displayArtworkUri = displayArtworkUri,
+                displayTrackNumber = displayTrackNumber,
+                displayYear = displayYear,
+                isFavorite = isFavorite,
+                onToggleFavorite = onToggleFavorite,
+                onEditMetadata = onEditMetadata,
+                onHide = onHide,
             )
         }
     }

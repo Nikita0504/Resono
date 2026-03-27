@@ -1,0 +1,201 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 3,
+    "identityHash": "3427769ac5007278d7cba39d7f17acb0",
+    "entities": [
+      {
+        "tableName": "audio_overrides",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`audio_id` TEXT NOT NULL, `is_hidden` INTEGER NOT NULL DEFAULT 0, `is_favorite` INTEGER NOT NULL DEFAULT 0, `custom_title` TEXT, `custom_artist` TEXT, `custom_album` TEXT, `custom_album_art_uri` TEXT, `custom_track_number` INTEGER, `custom_year` INTEGER, `playback_position_ms` INTEGER, PRIMARY KEY(`audio_id`))",
+        "fields": [
+          {
+            "fieldPath": "audioId",
+            "columnName": "audio_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isHidden",
+            "columnName": "is_hidden",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "isFavorite",
+            "columnName": "is_favorite",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "customTitle",
+            "columnName": "custom_title",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "customArtist",
+            "columnName": "custom_artist",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "customAlbum",
+            "columnName": "custom_album",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "customAlbumArtUri",
+            "columnName": "custom_album_art_uri",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "customTrackNumber",
+            "columnName": "custom_track_number",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "customYear",
+            "columnName": "custom_year",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "playbackPositionMs",
+            "columnName": "playback_position_ms",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "audio_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_audio_overrides_audio_id",
+            "unique": false,
+            "columnNames": [
+              "audio_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_audio_overrides_audio_id` ON `${TABLE_NAME}` (`audio_id`)"
+          },
+          {
+            "name": "index_audio_overrides_is_hidden",
+            "unique": false,
+            "columnNames": [
+              "is_hidden"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_audio_overrides_is_hidden` ON `${TABLE_NAME}` (`is_hidden`)"
+          },
+          {
+            "name": "index_audio_overrides_is_favorite",
+            "unique": false,
+            "columnNames": [
+              "is_favorite"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_audio_overrides_is_favorite` ON `${TABLE_NAME}` (`is_favorite`)"
+          }
+        ]
+      },
+      {
+        "tableName": "audio_albums",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`album_id` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT, `artwork_uri` TEXT, PRIMARY KEY(`album_id`))",
+        "fields": [
+          {
+            "fieldPath": "albumId",
+            "columnName": "album_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "artworkUri",
+            "columnName": "artwork_uri",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "album_id"
+          ]
+        }
+      },
+      {
+        "tableName": "audio_album_tracks",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`album_id` TEXT NOT NULL, `audio_id` TEXT NOT NULL, PRIMARY KEY(`album_id`, `audio_id`), FOREIGN KEY(`album_id`) REFERENCES `audio_albums`(`album_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "albumId",
+            "columnName": "album_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "audioId",
+            "columnName": "audio_id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "album_id",
+            "audio_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_audio_album_tracks_album_id",
+            "unique": false,
+            "columnNames": [
+              "album_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_audio_album_tracks_album_id` ON `${TABLE_NAME}` (`album_id`)"
+          },
+          {
+            "name": "index_audio_album_tracks_audio_id",
+            "unique": false,
+            "columnNames": [
+              "audio_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_audio_album_tracks_audio_id` ON `${TABLE_NAME}` (`audio_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "audio_albums",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "album_id"
+            ],
+            "referencedColumns": [
+              "album_id"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3427769ac5007278d7cba39d7f17acb0')"
+    ]
+  }
+}

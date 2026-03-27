@@ -25,8 +25,13 @@ object MediaItemMapper {
     }
 
     private fun PlayableMedia.buildMetadata(): MediaMetadata {
+        val resolvedTitle = when (val file = mediaFile) {
+            is com.dev.domain.model.MediaFile.Audio -> file.title?.takeIf { it.isNotBlank() } ?: file.name
+            is com.dev.domain.model.MediaFile.Video -> file.title?.takeIf { it.isNotBlank() } ?: file.name
+            is com.dev.domain.model.MediaFile.Photo -> file.title?.takeIf { it.isNotBlank() } ?: file.name
+        }
         val builder = MediaMetadata.Builder()
-            .setTitle(mediaFile.name)
+            .setTitle(resolvedTitle)
             .setIsBrowsable(false)
             .setIsPlayable(true)
 

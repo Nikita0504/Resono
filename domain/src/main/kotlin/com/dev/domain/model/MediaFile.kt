@@ -37,6 +37,7 @@ sealed interface MediaFile : BaseMediaData {
         val trackNumber: Int? = null,
         val year: Int? = null,
         val title: String? = null,
+        val isFavorite: Boolean = false,
     ) : MediaFile
 
     data class Video(

@@ -8,8 +8,11 @@ import com.dev.local.model.AudioMediaStoreRecord
 class AudioMediaMapper {
 
     fun toDomain(record: AudioMediaStoreRecord): MediaFile.Audio {
+        val stableAudioId = record.contentUriString.ifBlank {
+            "${record.displayName}|${record.sizeBytes}|${record.dateModifiedEpochSeconds ?: 0L}"
+        }
         return MediaFile.Audio(
-            id = record.id.toString(),
+            id = stableAudioId,
             name = record.displayName,
             mimeType = record.mimeType,
             sizeBytes = record.sizeBytes,

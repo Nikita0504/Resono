@@ -3,6 +3,8 @@ package com.dev.resono.navigation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
@@ -18,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination
@@ -25,6 +28,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.dev.domain.model.MediaFile
 import com.dev.medialibrary.MediaLibraryGraph
 import com.dev.navigation.navigateSingleTop
 import com.dev.player.PlayerSheetRoute
@@ -57,7 +61,7 @@ fun AppShell() {
                 iconText = "T",
                 route = TrackListGraph,
                 isSelected = { destination ->
-                    destination.hasRouteInHierarchy<TrackListGraph>()
+                    destination.hasRouteInHierarchy<PlayerFeatureGraph>()
                 },
             ),
             BottomBarDestination(
@@ -74,22 +78,41 @@ fun AppShell() {
     var bottomBarHeightPx by remember { mutableIntStateOf(0) }
     var playerSurfaceProgress by remember { mutableFloatStateOf(0f) }
     val sheetProgress = playerSurfaceProgress.coerceIn(0f, 1f)
+    val currentAudio = (playerState.currentItem?.mediaFile as? MediaFile.Audio)
+    val optimisticAudio = playerUiState.optimisticAudio?.takeIf { it.id == currentAudio?.id }
+    val displayAudio = optimisticAudio ?: currentAudio
+    val displayTitle = displayAudio?.title ?: displayAudio?.name ?: ""
+    val displayIsFavorite = displayAudio?.isFavorite ?: false
 
     val density = LocalDensity.current
     val visibleBottomBarHeightPx by remember(bottomBarHeightPx, sheetProgress) {
         derivedStateOf { (bottomBarHeightPx * (1f - sheetProgress)).coerceAtLeast(0f) }
     }
     val visibleBottomBarHeightDp = with(density) { visibleBottomBarHeightPx.toDp() }
+    val miniPlayerReserveDp by remember(playerUiState.sheetMode, sheetProgress) {
+        derivedStateOf {
+            if (playerUiState.sheetMode == PlayerSheetMode.Hidden) 0.dp
+            else (72.dp + 8.dp) * (1f - sheetProgress)
+        }
+    }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .safeDrawingPadding(),
+    ) {
         NavHost(
             navController = navController,
             startDestination = PlayerFeatureGraph,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = visibleBottomBarHeightDp),
+                .padding(bottom = visibleBottomBarHeightDp + miniPlayerReserveDp),
         ) {
             playerFeatureNavGraph(
+                navController = navController,
+                onOpenAlbums = {
+                    navController.navigateSingleTop(com.dev.albumlist.AlbumListGraph)
+                },
                 onTrackSelected = { tracks, startIndex ->
                     playerViewModel.onIntent(
                         AppPlayerIntent.PlayFromTrackList(
@@ -130,6 +153,29 @@ fun AppShell() {
             onSeekTo = { position ->
                 playerViewModel.onIntent(AppPlayerIntent.SeekTo(position))
             },
+            waveformSamples = playerUiState.waveformSamples,
+            displayTitle = displayTitle,
+            isFavorite = displayIsFavorite,
+            onToggleFavorite = {
+                currentAudio?.id?.let { trackId ->
+                    playerViewModel.onIntent(AppPlayerIntent.ToggleFavorite(trackId, it))
+                }
+            },
+            onEditMetadata = { metadata ->
+                currentAudio?.id?.let { trackId ->
+                    playerViewModel.onIntent(AppPlayerIntent.EditMetadata(trackId, metadata))
+                }
+            },
+            onHide = {
+                currentAudio?.id?.let { trackId ->
+                    playerViewModel.onIntent(AppPlayerIntent.HideCurrentTrack(trackId))
+                }
+            },
+            displayArtist = displayAudio?.artist.orEmpty(),
+            displayAlbum = displayAudio?.album.orEmpty(),
+            displayArtworkUri = displayAudio?.albumArtUri,
+            displayTrackNumber = displayAudio?.trackNumber,
+            displayYear = displayAudio?.year,
         )
 
         NavigationBar(
@@ -143,6 +189,8 @@ fun AppShell() {
                     translationY = sheetProgress * bottomBarHeightPx
                     alpha = (1f - sheetProgress).coerceIn(0f, 1f)
                 },
+            containerColor = MaterialTheme.colorScheme.surface,
+            tonalElevation = 0.dp,
         ) {
             bottomBarDestinations.forEach { destination ->
                 NavigationBarItem(

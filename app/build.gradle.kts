@@ -13,6 +13,8 @@ android {
 dependencies {
     implementation(projects.core.logger)
     implementation(projects.core.navigation)
+    implementation(projects.core.ui.theme)
+    implementation(projects.core.ui.component)
     implementation(projects.domain)
     implementation(projects.data.local)
     implementation(projects.data.repository)
