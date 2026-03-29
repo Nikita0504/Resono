@@ -96,14 +96,14 @@ Build variants:
 - `release`: minification enabled in `:app` (`isMinifyEnabled = true`).
 
 ## Screenshots
-Screenshots will be added in `docs/screenshots/`.
+### Home
+![Home](docs/screenshots/home.png)
 
-Expected files:
-- `home.png`
-- `player-mini.png`
-- `player-expanded.png`
-- `gallery.png`
-- `video.png`
+### Player (Expanded)
+![Player Expanded](docs/screenshots/player-expanded.png)
+
+### Albums
+![Albums](docs/screenshots/albums.png)
 
 ## Roadmap
 - Implement real gallery/photo/video UI on top of existing media domain/data contracts.
